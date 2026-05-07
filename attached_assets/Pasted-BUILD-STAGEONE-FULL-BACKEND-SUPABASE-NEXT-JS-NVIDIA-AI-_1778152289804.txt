@@ -1,0 +1,428 @@
+BUILD STAGEONE FULL BACKEND (SUPABASE + NEXT.JS + NVIDIA AI)
+
+We are building a production-ready backend for STAGEONE, an AI Artist Growth Operating System.
+
+Tech stack:
+
+Next.js (App Router)
+TypeScript
+Supabase (PostgreSQL + Auth)
+NVIDIA API for AI generation
+1. ENV VARIABLES
+
+Add:
+
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+NVIDIA_API_KEY=
+2. SUPABASE CLIENT
+/lib/supabase/client.ts
+import { createClient } from "@supabase/supabase-js"
+
+export const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+/lib/supabase/server.ts
+import { createClient } from "@supabase/supabase-js"
+
+export const supabaseServer = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
+3. DATABASE SCHEMA (SUPABASE SQL)
+create table artists (
+  id uuid primary key default uuid_generate_v4(),
+  email text unique,
+  artist_name text,
+  genre text,
+  secondary_genre text,
+  style_tags jsonb default '[]',
+  audience_profile text,
+  preferences jsonb default '{}',
+  created_at timestamp default now()
+);
+
+create table artist_dna (
+  id uuid primary key default uuid_generate_v4(),
+  artist_id uuid references artists(id) on delete cascade,
+  tone text,
+  visual_style text,
+  hook_style text,
+  audience_type text,
+  identity_summary text,
+  updated_at timestamp default now()
+);
+
+create table rollouts (
+  id uuid primary key default uuid_generate_v4(),
+  artist_id uuid references artists(id) on delete cascade,
+  song_title text,
+  genre text,
+  mood text,
+  rollout_timeline jsonb,
+  hooks jsonb,
+  visual_direction jsonb,
+  audience_strategy jsonb,
+  launch_score jsonb,
+  strategic_insight text,
+  created_at timestamp default now()
+);
+
+create table campaign_shares (
+  id uuid primary key default uuid_generate_v4(),
+  rollout_id uuid references rollouts(id) on delete cascade,
+  platform text,
+  created_at timestamp default now()
+);
+4. NVIDIA AI ENGINE (FIXED VERSION)
+/lib/ai/stageone-engine.ts
+export async function generateRollout(input: any, artist: any, dna: any) {
+
+  const prompt = `
+You are STAGEONE, a senior music marketing creative director.
+
+You build rollout strategies for artists.
+
+Be:
+- strategic
+- opinionated
+- culturally aware
+- genre-specific
+- non-generic
+
+ARTIST:
+${JSON.stringify(artist)}
+
+DNA:
+${JSON.stringify(dna)}
+
+INPUT:
+${JSON.stringify(input)}
+
+Return ONLY valid JSON:
+
+{
+  "rolloutTimeline": [
+    {"phase": "TEASE", "strategy": ""},
+    {"phase": "BUILD", "strategy": ""},
+    {"phase": "RELEASE", "strategy": ""},
+    {"phase": "SUSTAIN", "strategy": ""}
+  ],
+  "hooks": [
+    {"type": "curiosity", "text": ""},
+    {"type": "emotional", "text": ""},
+    {"type": "identity", "text": ""}
+  ],
+  "visualDirection": {
+    "lighting": "",
+    "aesthetic": "",
+    "scene": "",
+    "colorPalette": ""
+  },
+  "audienceStrategy": [
+    {"segment": "", "behavior": ""}
+  ],
+  "launchScore": {
+    "hookVirality": 0,
+    "emotionalDepth": 0,
+    "replayValue": 0,
+    "trendFit": 0,
+    "audienceFit": 0
+  },
+  "strategicInsight": ""
+}
+`
+
+  const response = await fetch(
+    "https://integrate.api.nvidia.com/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.NVIDIA_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "meta/llama-3.1-70b-instruct",
+        messages: [
+          { role: "user", content: prompt }
+        ],
+        temperature: 0.7,
+        max_tokens: 2000
+      })
+    }
+  )
+
+  const data = await response.json()
+
+  const content = data.choices?.[0]?.message?.content
+
+  try {
+    return JSON.parse(content)
+  } catch (e) {
+    return {
+      error: "Invalid AI response",
+      raw: content
+    }
+  }
+}
+5. API ROUTES
+/app/api/generate-rollout/route.ts
+import { supabaseServer } from "@/lib/supabase/server"
+import { generateRollout } from "@/lib/ai/stageone-engine"
+
+export async function POST(req: Request) {
+  const body = await req.json()
+
+  const { artistId, songTitle, genre, mood } = body
+
+  const { data: artist } = await supabaseServer
+    .from("artists")
+    .select("*")
+    .eq("id", artistId)
+    .single()
+
+  const { data: dna } = await supabaseServer
+    .from("artist_dna")
+    .select("*")
+    .eq("artist_id", artistId)
+    .single()
+
+  const rollout = await generateRollout(
+    { songTitle, genre, mood },
+    artist,
+    dna
+  )
+
+  return Response.json(rollout)
+}
+/app/api/save-rollout/route.ts
+import { supabaseServer } from "@/lib/supabase/server"
+
+export async function POST(req: Request) {
+  const body = await req.json()
+
+  const { artistId, rollout } = body
+
+  const { data } = await supabaseServer
+    .from("rollouts")
+    .insert({
+      artist_id: artistId,
+      song_title: rollout.songTitle,
+      genre: rollout.genre,
+      mood: rollout.mood,
+      rollout_timeline: rollout.rolloutTimeline,
+      hooks: rollout.hooks,
+      visual_direction: rollout.visualDirection,
+      audience_strategy: rollout.audienceStrategy,
+      launch_score: rollout.launchScore,
+      strategic_insight: rollout.strategicInsight
+    })
+
+  return Response.json({ success: true, data })
+}
+/app/api/share-campaign/route.ts
+import { supabaseServer } from "@/lib/supabase/server"
+
+export async function POST(req: Request) {
+  const body = await req.json()
+
+  const { rolloutId, platform } = body
+
+  await supabaseServer.from("campaign_shares").insert({
+    rollout_id: rolloutId,
+    platform
+  })
+
+  return Response.json({ success: true })
+}
+6. SYSTEM RULES
+All AI outputs must be valid JSON
+No markdown from AI
+AI must be genre-aware and strategic
+Artist DNA must influence output
+System must not generate generic responses
+7. END GOAL
+
+This backend powers:
+
+AI rollout generation
+Artist personalization (DNA system)
+Campaign storage
+Viral sharing tracking
+Scalable SaaS architecture
+
+
+
+===============================================================
+
+
+BUILD AUTHENTICATION + ARTIST ONBOARDING FLOW FOR STAGEONE
+
+We are adding full user authentication and onboarding to STAGEONE.
+
+Use:
+
+Supabase Auth
+Next.js App Router
+TypeScript
+
+Goal:
+
+Every user becomes an “Artist Profile” inside STAGEONE with persistent memory and onboarding setup.
+
+1. ENABLE SUPABASE AUTH
+
+Use Supabase email authentication.
+
+Users must be able to:
+
+sign up
+log in
+log out
+2. CREATE AUTH PAGES
+/app/login/page.tsx
+
+Create a clean login page:
+
+email input
+password input
+“Sign in” button
+“Create account” link
+/app/signup/page.tsx
+
+Create signup page:
+
+artist name
+email
+password
+genre selection (dropdown)
+sign up button
+3. AFTER SIGNUP → ONBOARDING FLOW
+
+After first signup, redirect user to:
+
+/onboarding
+
+This is REQUIRED before using studio.
+
+4. ONBOARDING PAGE (/onboarding)
+
+This page collects:
+
+Step 1: Artist Identity
+Artist Name
+Primary Genre
+Secondary Genre (optional)
+Step 2: Creative Style
+Mood preference (dark / emotional / energetic / cinematic)
+Visual aesthetic (minimal / luxury / street / futuristic / retro)
+Step 3: Audience Target
+Who they make music for:
+Gen Z TikTok listeners
+Club audience
+Emotional streaming listeners
+Viral short-form audience
+5. SAVE ONBOARDING TO SUPABASE
+
+On submit:
+
+Create artist record
+insert into artists (
+  email,
+  artist_name,
+  genre,
+  secondary_genre,
+  audience_profile,
+  preferences
+)
+Also create Artist DNA record
+insert into artist_dna (
+  artist_id,
+  tone,
+  visual_style,
+  audience_type,
+  identity_summary
+)
+6. CREATE AUTH HOOK (SESSION PROTECTION)
+
+Create middleware:
+
+/middleware.ts
+
+Protect routes:
+
+/studio
+/dashboard
+/pricing (optional gated features)
+
+If not logged in → redirect to /login
+
+7. SESSION HANDLING
+
+Create helper:
+
+/lib/auth.ts
+
+Use Supabase session:
+
+getUser()
+getSession()
+8. UPDATE STUDIO PAGE PROTECTION
+
+Before loading /studio:
+
+check user session
+fetch artist profile
+load artist DNA
+
+Pass to AI engine automatically
+
+9. AUTO REDIRECT FLOW
+
+User journey:
+
+First time:
+
+signup → onboarding → studio
+
+Returning:
+
+login → dashboard → studio
+
+10. ADD “WELCOME PERSONALIZATION”
+
+After onboarding completion, show:
+
+Welcome Message:
+
+Example:
+
+“Welcome, [Artist Name]. Your Afro-cinematic identity is now active in STAGEONE.”
+
+This should feel personalized and premium.
+
+11. CREATE USER DASHBOARD LINKING
+
+In dashboard show:
+
+Artist profile summary
+Past rollouts
+“Generate new rollout” CTA
+12. SECURITY RULES
+Users can only access their own data
+RLS enabled in Supabase
+No cross-user data access
+13. FINAL EXPERIENCE GOAL
+
+After this system:
+
+STAGEONE becomes:
+
+a personalized AI workspace for each artist
+
+NOT:
+
+a shared tool

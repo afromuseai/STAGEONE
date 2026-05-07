@@ -1,8 +1,9 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import { Link } from "wouter";
 import ShareModal from "@/components/ShareModal";
 import { getProfile, saveProfile, learnFromRollout, getPersonalizationMessage, hasMemory } from "@/lib/artistProfile";
+import { useArtist } from "@/hooks/useAuth";
 import {
   ArrowLeft,
   Sparkles,
@@ -32,6 +33,7 @@ import {
   Crown,
   X,
   ArrowRight,
+  Check,
 } from "lucide-react";
 
 // ─── INTELLIGENCE ENGINE ─────────────────────────────────────────────────────
@@ -802,6 +804,7 @@ function InputField({ label, icon, value, onChange, placeholder, testId }: {
 // ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
 
 export default function Studio() {
+  const { artist } = useArtist();
   const [form, setForm] = useState<FormState>({
     songTitle: "", genre: "", artistName: "", mood: "", audience: "", goal: "", platforms: [], notes: "",
   });
@@ -811,6 +814,18 @@ export default function Studio() {
   const [upgradeModal, setUpgradeModal] = useState<typeof UPGRADE_TRIGGERS[0] | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
   const [artistProfile, setArtistProfile] = useState(() => getProfile());
+  const [apiStrategicInsight, setApiStrategicInsight] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    if (artist?.artistName) {
+      setForm(prev => ({ ...prev, artistName: prev.artistName || artist.artistName! }));
+    }
+    if (artist?.genre) {
+      setForm(prev => ({ ...prev, genre: prev.genre || artist.genre! }));
+    }
+  }, [artist]);
 
   const output = useMemo<GeneratedOutput | null>(() => {
     if (status !== "done") return null;
@@ -828,13 +843,15 @@ export default function Studio() {
       platforms: prev.platforms.includes(p) ? prev.platforms.filter(x => x !== p) : [...prev.platforms, p],
     }));
   }
-  function handleGenerate() {
+  async function handleGenerate() {
     if (!form.songTitle || !form.artistName) return;
     const newSeed = form.songTitle + form.artistName + Date.now();
     setSeed(newSeed);
     setStatus("generating");
     setGenerateCount(c => c + 1);
-    // Persist to artist memory
+    setApiStrategicInsight(null);
+    setSaved(false);
+    // Persist to local artist memory
     const profile = getProfile();
     const updated = learnFromRollout(profile, {
       songTitle: form.songTitle,
@@ -847,7 +864,41 @@ export default function Studio() {
     });
     saveProfile(updated);
     setArtistProfile(updated);
-    setTimeout(() => setStatus("done"), 3200);
+    // Race minimum display delay with NVIDIA API call
+    const minDelay = new Promise<void>(resolve => setTimeout(resolve, 3200));
+    const apiCall = fetch("/api/generate-rollout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ songTitle: form.songTitle, genre: form.genre, mood: form.mood }),
+    }).then(r => r.ok ? r.json() : null).catch(() => null);
+    const [, apiData] = await Promise.all([minDelay, apiCall]);
+    if (apiData?.strategicInsight) {
+      setApiStrategicInsight(apiData.strategicInsight as string);
+    }
+    setStatus("done");
+  }
+
+  async function handleSaveCampaign() {
+    if (!output || !form.songTitle || saving || saved) return;
+    setSaving(true);
+    try {
+      const res = await fetch("/api/rollouts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          songTitle: form.songTitle,
+          genre: form.genre,
+          mood: form.mood,
+          hooks: output.hooks,
+          strategicInsight: apiStrategicInsight ?? output.whyInsights.join(" "),
+          launchScore: { overall: overallScore },
+        }),
+      });
+      if (res.ok) setSaved(true);
+    } catch { /* silent */ }
+    setSaving(false);
   }
   function handleRegenerate() {
     if (generateCount >= 2) {
@@ -1326,13 +1377,22 @@ export default function Studio() {
                     <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
                       <Brain size={15} className="text-primary" />
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <p className="text-sm font-semibold">Strategic Insight</p>
                       <p className="text-xs text-muted-foreground">The specific mechanics that make this strategy work</p>
                     </div>
+                    {apiStrategicInsight && (
+                      <span className="text-[9px] font-bold text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded uppercase tracking-wider">AI Enhanced</span>
+                    )}
                   </div>
                   <div className="px-5 py-4 space-y-3">
-                    {output.whyInsights.map((insight, i) => (
+                    {apiStrategicInsight ? (
+                      <motion.div initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.35 }}
+                        className="flex items-start gap-3">
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
+                        <p className="text-sm text-muted-foreground leading-relaxed">{apiStrategicInsight}</p>
+                      </motion.div>
+                    ) : output.whyInsights.map((insight, i) => (
                       <motion.div key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.35 + 0.06 * i }}
                         className="flex items-start gap-3">
                         <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
@@ -1348,6 +1408,14 @@ export default function Studio() {
                   <button data-testid="btn-launch-campaign" onClick={handleLaunchCampaign}
                     className="flex items-center gap-2 px-5 py-3 rounded-xl bg-primary text-background font-semibold text-sm hover:bg-primary/90 transition-colors">
                     <Zap size={16} /> Launch Campaign
+                  </button>
+                  <button data-testid="btn-save-campaign" onClick={handleSaveCampaign} disabled={saving || saved}
+                    className={`flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                      saved
+                        ? "border border-emerald-500/40 bg-emerald-500/10 text-emerald-400"
+                        : "border border-border bg-card/40 hover:border-primary/40 hover:bg-card/70 text-foreground"
+                    }`}>
+                    {saved ? <><Check size={16} /> Saved</> : saving ? <><motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }}><Sparkles size={16} /></motion.div> Saving...</> : <><BarChart3 size={16} /> Save Campaign</>}
                   </button>
                   <button data-testid="btn-share-campaign" onClick={() => setShowShareModal(true)}
                     className="flex items-center gap-2 px-5 py-3 rounded-xl border border-primary/30 bg-primary/8 text-primary text-sm font-semibold hover:bg-primary/14 hover:border-primary/50 transition-all duration-200">

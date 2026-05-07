@@ -34,8 +34,10 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AreaChart, Area, ResponsiveContainer, Tooltip } from "recharts";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getProfile, getPersonalizationMessage, hasMemory } from "@/lib/artistProfile";
+import { useAuth, useArtist } from "@/hooks/useAuth";
+import { redirectToLogout } from "@/lib/auth-utils";
 
 const streamData = [
   { day: "Oct 1", streams: 18400 }, { day: "Oct 5", streams: 22100 },
@@ -70,9 +72,14 @@ function MiniSparkline({ data, color = "#C8A96B" }: { data: number[]; color?: st
 
 export default function Dashboard() {
   const [activeNav, setActiveNav] = useState("Dashboard");
+  const { user } = useAuth();
+  const { artist } = useArtist();
   const profile = getProfile();
   const personalizationMsg = getPersonalizationMessage(profile);
   const hasProfileMemory = hasMemory(profile);
+
+  const displayName = artist?.artistName || profile.artistName || user?.firstName || "Artist";
+  const displayGenre = artist?.genre || profile.primaryGenre || "Independent";
 
   return (
     <div className="flex h-screen w-full bg-background text-foreground overflow-hidden">
@@ -138,13 +145,15 @@ export default function Dashboard() {
         <div className="p-3 border-t border-border/40">
           <div className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-secondary/40 cursor-pointer transition-colors group">
             <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 border border-primary/30 flex items-center justify-center text-primary font-bold text-xs shrink-0">
-              {profile.artistName ? profile.artistName.slice(0, 2).toUpperCase() : "OA"}
+              {displayName.slice(0, 2).toUpperCase()}
             </div>
             <div className="flex-1 overflow-hidden">
-              <p className="text-xs font-semibold truncate">{profile.artistName || "Outsider Art"}</p>
-              <p className="text-[10px] text-muted-foreground truncate">{profile.primaryGenre || "Independent"}</p>
+              <p className="text-xs font-semibold truncate">{displayName}</p>
+              <p className="text-[10px] text-muted-foreground truncate">{displayGenre}</p>
             </div>
-            <LogOut size={13} className="text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
+            <button onClick={redirectToLogout}>
+              <LogOut size={13} className="text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
+            </button>
           </div>
         </div>
       </aside>

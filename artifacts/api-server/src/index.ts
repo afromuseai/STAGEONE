@@ -1,5 +1,7 @@
 import app from "./app";
 import { logger } from "./lib/logger";
+import { setupAuth } from "./auth";
+import router from "./routes";
 
 const rawPort = process.env["PORT"];
 
@@ -15,11 +17,20 @@ if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 
-app.listen(port, (err) => {
-  if (err) {
-    logger.error({ err }, "Error listening on port");
-    process.exit(1);
-  }
+async function main() {
+  await setupAuth(app);
+  app.use("/api", router);
 
-  logger.info({ port }, "Server listening");
+  app.listen(port, (err) => {
+    if (err) {
+      logger.error({ err }, "Error listening on port");
+      process.exit(1);
+    }
+    logger.info({ port }, "Server listening");
+  });
+}
+
+main().catch((err) => {
+  logger.error({ err }, "Failed to start server");
+  process.exit(1);
 });
