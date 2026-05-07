@@ -2,6 +2,7 @@ import { useState, useRef, useMemo } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import { Link } from "wouter";
 import ShareModal from "@/components/ShareModal";
+import { getProfile, saveProfile, learnFromRollout, getPersonalizationMessage, hasMemory } from "@/lib/artistProfile";
 import {
   ArrowLeft,
   Sparkles,
@@ -35,7 +36,16 @@ import {
 
 // ─── INTELLIGENCE ENGINE ─────────────────────────────────────────────────────
 
-const GENRES = ["Hip-Hop", "R&B / Soul", "Pop", "Afrobeats", "Electronic", "Alternative", "Latin", "Indie", "Gospel", "Jazz"];
+const GENRE_CATEGORIES: Record<string, string[]> = {
+  "Urban": ["Hip-Hop", "Trap", "Drill", "R&B / Soul", "Neo-Soul"],
+  "Pop & Alternative": ["Pop", "Hyperpop", "Alternative", "Indie", "Bedroom Pop", "Lo-Fi"],
+  "Electronic": ["Electronic", "House", "Techno", "Synthwave", "Drum & Bass", "Ambient"],
+  "Global": ["Afrobeats", "Amapiano", "Afro-Pop", "Latin", "Reggaeton", "Soca", "Dancehall", "Reggae", "K-Pop", "Bossa Nova"],
+  "Roots": ["Gospel", "Jazz", "Blues", "Funk", "Soul", "Country", "Folk"],
+  "Rock & Alt": ["Rock", "Indie Rock", "Punk", "Emo", "Metal", "Grunge"],
+};
+
+const GENRES = Object.values(GENRE_CATEGORIES).flat();
 const GOALS = ["First 100K Streams", "Viral TikTok Moment", "Playlist Placement", "Build Fanbase", "Label Attention", "Brand Deals"];
 const PLATFORMS = ["TikTok", "Instagram", "YouTube", "Spotify", "Apple Music", "Twitter/X", "SoundCloud"];
 
@@ -800,6 +810,7 @@ export default function Studio() {
   const [generateCount, setGenerateCount] = useState(0);
   const [upgradeModal, setUpgradeModal] = useState<typeof UPGRADE_TRIGGERS[0] | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [artistProfile, setArtistProfile] = useState(() => getProfile());
 
   const output = useMemo<GeneratedOutput | null>(() => {
     if (status !== "done") return null;
@@ -819,9 +830,23 @@ export default function Studio() {
   }
   function handleGenerate() {
     if (!form.songTitle || !form.artistName) return;
-    setSeed(form.songTitle + form.artistName + Date.now());
+    const newSeed = form.songTitle + form.artistName + Date.now();
+    setSeed(newSeed);
     setStatus("generating");
     setGenerateCount(c => c + 1);
+    // Persist to artist memory
+    const profile = getProfile();
+    const updated = learnFromRollout(profile, {
+      songTitle: form.songTitle,
+      artistName: form.artistName,
+      genre: form.genre,
+      goal: form.goal,
+      mood: form.mood,
+      platforms: form.platforms,
+      targetAudience: form.audience,
+    });
+    saveProfile(updated);
+    setArtistProfile(updated);
     setTimeout(() => setStatus("done"), 3200);
   }
   function handleRegenerate() {
@@ -906,17 +931,30 @@ export default function Studio() {
               <InputField label="Song Title" icon={<Music size={15} />} value={form.songTitle} onChange={v => handleChange("songTitle", v)} placeholder="e.g. Midnight Echoes" testId="input-song-title" />
               <InputField label="Artist Name" icon={<Mic2 size={15} />} value={form.artistName} onChange={v => handleChange("artistName", v)} placeholder="Your artist name" testId="input-artist-name" />
 
-              {/* Genre */}
-              <div className="space-y-2">
+              {/* Genre — categorized toggle select */}
+              <div className="space-y-3">
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5"><Radio size={13} /> Genre</label>
-                <div className="flex flex-wrap gap-2">
-                  {GENRES.map(g => (
-                    <button key={g} onClick={() => handleChange("genre", g)} data-testid={`btn-genre-${g}`}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 ${form.genre === g ? "bg-primary/20 border-primary/60 text-primary" : "bg-card/50 border-border text-muted-foreground hover:border-primary/30 hover:text-foreground"}`}>
-                      {g}
-                    </button>
-                  ))}
-                </div>
+                {Object.entries(GENRE_CATEGORIES).map(([category, genres]) => (
+                  <div key={category}>
+                    <p className="text-[9px] font-bold text-muted-foreground/40 uppercase tracking-[0.15em] mb-1.5">{category}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {genres.map(g => (
+                        <button
+                          key={g}
+                          onClick={() => handleChange("genre", form.genre === g ? "" : g)}
+                          data-testid={`btn-genre-${g}`}
+                          className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition-all duration-150 ${
+                            form.genre === g
+                              ? "bg-primary/20 border-primary/60 text-primary shadow-[0_0_12px_-4px_hsl(38,46%,60%)]"
+                              : "bg-card/40 border-border/60 text-muted-foreground hover:border-primary/30 hover:text-foreground hover:bg-card/80"
+                          }`}
+                        >
+                          {g}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
 
               <InputField label="Mood / Vibe" icon={<Flame size={15} />} value={form.mood} onChange={v => handleChange("mood", v)} placeholder="e.g. dark, cinematic, euphoric, melancholic, aggressive" testId="input-mood" />
@@ -981,37 +1019,82 @@ export default function Studio() {
                 <Fingerprint size={16} className="text-primary" />
                 <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Artist DNA</span>
               </div>
-              {status === "done" && (
+              {hasMemory(artistProfile) ? (
+                <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                  className="text-[10px] font-bold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-1.5 py-0.5 rounded">
+                  {artistProfile.rolloutHistory.length} ROLLOUTS
+                </motion.span>
+              ) : status === "done" ? (
                 <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                   className="text-[10px] font-bold text-primary bg-primary/10 border border-primary/20 px-1.5 py-0.5 rounded">
-                  DRIVING OUTPUT
+                  LEARNING
                 </motion.span>
-              )}
+              ) : null}
             </div>
+
+            {/* Identity summary from memory */}
             <AnimatePresence mode="wait">
-              <motion.p key={dnaTag} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
-                className={`text-sm font-medium mb-3 ${dnaTag.includes("building") ? "text-muted-foreground/50" : "text-primary"}`}>
-                {dnaTag}
-              </motion.p>
+              {hasMemory(artistProfile) && artistProfile.creativeIdentitySummary ? (
+                <motion.div key="memory-summary" initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
+                  className="mb-3 px-3 py-2 rounded-lg bg-primary/8 border border-primary/15">
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-0.5">Identity</p>
+                  <p className="text-sm font-semibold text-primary leading-snug">{artistProfile.creativeIdentitySummary}</p>
+                </motion.div>
+              ) : (
+                <motion.p key={dnaTag} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
+                  className={`text-sm font-medium mb-3 ${dnaTag.includes("building") ? "text-muted-foreground/50" : "text-primary"}`}>
+                  {dnaTag}
+                </motion.p>
+              )}
             </AnimatePresence>
+
             <div className="space-y-2.5">
               {[
-                { label: "Genre DNA", value: form.genre || "—", active: !!form.genre, influence: form.genre ? `Shaping hook tone + audience clusters` : null },
-                { label: "Mood Signature", value: form.mood || "—", active: !!form.mood, influence: form.mood ? `Driving visual identity + hook emotion` : null },
-                { label: "Release Goal", value: form.goal || "—", active: !!form.goal, influence: form.goal ? `Defining rollout timeline + strategy` : null },
-                { label: "Platforms", value: form.platforms.length ? form.platforms.slice(0, 2).join(", ") + (form.platforms.length > 2 ? ` +${form.platforms.length - 2}` : "") : "—", active: form.platforms.length > 0, influence: form.platforms.length > 0 ? `Calibrating platform-specific tactics` : null },
-              ].map(({ label, value, active, influence }) => (
+                {
+                  label: "Genre DNA",
+                  value: form.genre || artistProfile.primaryGenre || "—",
+                  sub: !form.genre && artistProfile.primaryGenre ? "(from memory)" : null,
+                  active: !!(form.genre || artistProfile.primaryGenre),
+                  influence: (form.genre || artistProfile.primaryGenre) ? "Shaping hook tone + audience clusters" : null,
+                },
+                {
+                  label: "Mood Signature",
+                  value: form.mood || (artistProfile.moodPreferences.length ? artistProfile.moodPreferences[artistProfile.moodPreferences.length - 1] : "—"),
+                  sub: !form.mood && artistProfile.moodPreferences.length ? "(from memory)" : null,
+                  active: !!(form.mood || artistProfile.moodPreferences.length),
+                  influence: (form.mood || artistProfile.moodPreferences.length) ? "Driving visual identity + hook emotion" : null,
+                },
+                {
+                  label: "Audience",
+                  value: form.audience || artistProfile.targetAudience || "—",
+                  sub: !form.audience && artistProfile.targetAudience ? "(from memory)" : null,
+                  active: !!(form.audience || artistProfile.targetAudience),
+                  influence: (form.audience || artistProfile.targetAudience) ? "Calibrating audience cluster strategy" : null,
+                },
+                {
+                  label: "Platforms",
+                  value: form.platforms.length ? form.platforms.slice(0, 2).join(", ") + (form.platforms.length > 2 ? ` +${form.platforms.length - 2}` : "") : "—",
+                  sub: null,
+                  active: form.platforms.length > 0,
+                  influence: form.platforms.length > 0 ? "Calibrating platform-specific tactics" : null,
+                },
+              ].map(({ label, value, sub, active, influence }) => (
                 <div key={label} className="space-y-0.5">
                   <div className="flex items-start justify-between gap-3">
                     <span className="text-xs text-muted-foreground shrink-0">{label}</span>
-                    <motion.span key={value} initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                      className={`text-xs font-medium text-right ${active ? "text-foreground" : "text-muted-foreground/30"}`}>
-                      {value}
-                    </motion.span>
+                    <div className="text-right">
+                      <motion.span key={value} initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                        className={`text-xs font-medium ${active ? "text-foreground" : "text-muted-foreground/30"}`}>
+                        {value}
+                      </motion.span>
+                      {sub && (
+                        <p className="text-[10px] text-primary/50 mt-0.5">{sub}</p>
+                      )}
+                    </div>
                   </div>
                   {influence && status === "done" && (
                     <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
-                      className="text-[10px] text-primary/60 italic pl-0">
+                      className="text-[10px] text-primary/60 italic">
                       {influence}
                     </motion.p>
                   )}
@@ -1032,10 +1115,28 @@ export default function Studio() {
                   animate={{ y: [0, -8, 0] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}>
                   <Zap size={32} className="text-primary" />
                 </motion.div>
-                <div className="space-y-2 max-w-md">
-                  <h2 className="text-2xl font-bold tracking-tight">Your Campaign Awaits</h2>
-                  <p className="text-muted-foreground text-sm leading-relaxed">Every output adapts to your genre, mood, and goals. The more context you give, the sharper the strategy becomes.</p>
-                </div>
+                {hasMemory(artistProfile) ? (
+                  <div className="space-y-2 max-w-md">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 mb-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                      <span className="text-xs font-semibold text-primary uppercase tracking-wider">Artist Memory Active</span>
+                    </div>
+                    <h2 className="text-2xl font-bold tracking-tight">
+                      {artistProfile.artistName ? `Welcome back, ${artistProfile.artistName}` : "Your identity is being refined"}
+                    </h2>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
+                      {getPersonalizationMessage(artistProfile)} Your established {artistProfile.primaryGenre || "creative"} identity is loaded and shaping this output.
+                    </p>
+                    {artistProfile.creativeIdentitySummary && (
+                      <p className="text-xs font-medium text-primary/80 mt-1">{artistProfile.creativeIdentitySummary}</p>
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-2 max-w-md">
+                    <h2 className="text-2xl font-bold tracking-tight">Your Campaign Awaits</h2>
+                    <p className="text-muted-foreground text-sm leading-relaxed">Every output adapts to your genre, mood, and goals. The more context you give, the sharper the strategy becomes.</p>
+                  </div>
+                )}
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4 w-full max-w-lg">
                   {["Context-Aware Hooks", "Genre-Matched Visuals", "Audience Clusters", "Platform Strategy", "Launch Score", "Strategic Insights"].map((item, i) => (
                     <motion.div key={item} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 * i }}
@@ -1055,6 +1156,23 @@ export default function Studio() {
 
             {status === "done" && output && (
               <motion.div key="done" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-6 md:p-8 space-y-10">
+
+                {/* Evolving Identity Message */}
+                <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl border border-primary/20 bg-primary/5 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-transparent" />
+                  <div className="relative flex items-center gap-2.5 flex-1 min-w-0">
+                    <Brain size={14} className="text-primary shrink-0" />
+                    <p className="text-sm text-primary/90 font-medium truncate">
+                      {getPersonalizationMessage(artistProfile)}
+                    </p>
+                  </div>
+                  {hasMemory(artistProfile) && artistProfile.rolloutHistory.length > 1 && (
+                    <span className="relative text-[10px] font-bold text-primary/70 bg-primary/10 border border-primary/20 px-1.5 py-0.5 rounded shrink-0">
+                      {artistProfile.rolloutHistory.length} rollouts
+                    </span>
+                  )}
+                </motion.div>
 
                 {/* Header */}
                 <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}

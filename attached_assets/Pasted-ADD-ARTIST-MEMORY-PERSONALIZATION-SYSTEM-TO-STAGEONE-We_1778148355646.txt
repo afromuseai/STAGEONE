@@ -1,0 +1,99 @@
+ADD ARTIST MEMORY + PERSONALIZATION SYSTEM TO STAGEONE
+
+We are upgrading STAGEONE into a personalized AI creative system that remembers users and adapts outputs over time.
+
+This is a critical shift from static AI generation to adaptive intelligence.
+
+1. CREATE ARTIST PROFILE SYSTEM
+
+Each user must have a persistent profile:
+
+Artist Profile Stores:
+Artist Name
+Primary Genre
+Secondary Genre
+Mood Preferences
+Visual Aesthetic Style
+Target Audience Type
+Previous Rollouts (history)
+Preferred Hook Style (optional inference)
+
+Store this in a simple database (or local storage if MVP).
+
+2. AUTO-LEARN FROM USER INPUTS
+
+Every time user generates a rollout:
+
+update artist profile automatically
+infer preferences from selections
+refine genre understanding over time
+
+Example:
+If user repeatedly selects “dark cinematic” visuals → store that preference.
+
+3. PERSONALIZED OUTPUT BEHAVIOR
+
+All /studio outputs must now:
+
+adapt tone based on artist profile
+reuse successful patterns
+maintain consistency with past rollouts
+evolve strategy over time
+
+NO generic outputs allowed if profile exists.
+
+4. ADD “ARTIST MEMORY PANEL” IN UI
+
+In /studio sidebar, show:
+
+Artist DNA (Live Profile)
+
+Display:
+
+Genre
+Style tags
+Audience type
+Creative identity summary
+
+This must update dynamically.
+
+5. ADD “EVOLVING IDENTITY MESSAGE”
+
+At top of output panel show:
+
+Example:
+
+“Refining your rollout style based on previous campaigns…”
+
+or
+
+“Building consistency with your established Afro-cinematic identity…”
+
+This reinforces personalization.
+
+6. ADD PREFERENCE WEIGHTING SYSTEM (LIGHTWEIGHT LOGIC)
+
+When generating outputs:
+
+weight past preferences higher than random variation
+maintain creative consistency
+avoid breaking artist identity unless explicitly changed
+7. MAKE AI FEEL LIKE IT “KNOWS THE USER”
+
+Outputs should feel like:
+
+“I’ve seen your style before — this is the strongest direction for you”
+
+NOT:
+
+“Here is a generic result”
+
+8. FINAL EXPERIENCE GOAL
+
+STAGEONE should now feel like:
+
+“a personal AI creative director that evolves with every release”
+
+NOT:
+
+“a one-time generator tool”
