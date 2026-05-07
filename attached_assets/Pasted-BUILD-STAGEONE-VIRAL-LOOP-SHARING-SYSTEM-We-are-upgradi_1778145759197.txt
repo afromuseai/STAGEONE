@@ -1,0 +1,142 @@
+BUILD STAGEONE VIRAL LOOP + SHARING SYSTEM
+
+We are upgrading STAGEONE into a viral growth product.
+
+The goal is:
+
+Every AI-generated rollout becomes a shareable, aesthetic campaign card that users can export and post on social media.
+
+This is a core growth system, not a minor feature.
+
+1. CREATE /SHOWCASE PAGE
+
+Create a new route:
+
+/showcase
+
+This page displays:
+
+user-generated rollout campaign cards
+trending campaigns
+featured AI rollouts
+
+Design:
+
+dark luxury UI (#0A0A0B background)
+gold accents (#C8A96B)
+minimal layout
+grid-based gallery of campaign cards
+
+Each card must look cinematic and premium.
+
+2. CREATE “CAMPAIGN CARD SYSTEM”
+
+Each generated rollout in /studio must be convertible into a shareable card.
+
+Card Content:
+Song Title
+Artist Name
+Genre
+Key Strategy Insight (1 line)
+TikTok Hook example
+Rollout Phase label (TEASE / BUILD / RELEASE / SUSTAIN)
+3. DESIGN REQUIREMENTS FOR CARDS
+
+Cards must feel like:
+
+premium music marketing dashboards
+cinematic creative previews
+high-end SaaS visuals
+
+Include:
+
+soft glow effects
+subtle gradients
+gold highlights
+clean typography
+spacing-focused layout
+
+DO NOT make them cluttered.
+
+4. ADD “SHARE CAMPAIGN” BUTTON IN /studio
+
+After a rollout is generated, show:
+
+Button:
+
+“Share Campaign”
+
+On click:
+
+generate a visually polished campaign card
+allow export as image
+5. EXPORT FORMATS
+
+Support export as:
+
+Instagram Story (1080x1920)
+Twitter/X card (1200x675)
+TikTok post preview (vertical format)
+Square image (1080x1080)
+
+All exports must preserve premium styling.
+
+6. ADD WATERMARK SYSTEM
+
+Each exported image must include a subtle watermark:
+
+STAGEONE · AI Rollout System
+
+Position:
+
+bottom-right corner
+low opacity
+elegant, not intrusive
+7. ADD REFERRAL LINK SYSTEM
+
+Each user should have a referral link:
+
+Format:
+/?ref=username
+
+Track referrals in a simple way (frontend mock is fine for now).
+
+8. ADD “TRENDING ROLLOUTS” SECTION
+
+Inside /showcase:
+
+Section:
+
+Trending Campaigns
+
+Show:
+
+most shared rollouts
+most saved campaigns (mock data allowed)
+visually highlighted cards
+9. ADD SOCIAL VIRAL LOOP BEHAVIOR
+
+Every campaign card must feel like:
+
+something users WANT to share publicly
+
+Focus on:
+
+aesthetic quality
+clarity of insight
+emotional appeal
+professional presentation
+10. FINAL GOAL
+
+This system should create a viral loop where:
+
+User generates rollout
+User shares campaign card
+Others see STAGEONE branding
+New users join
+Cycle repeats
+END GOAL
+
+Turn STAGEONE into:
+
+a creator-driven viral growth engine for artists

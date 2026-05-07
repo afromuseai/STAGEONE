@@ -1,0 +1,198 @@
+We are now evolving STAGEONE from a visual landing page into a believable AI product experience.
+
+The goal is:
+
+make users feel like the AI actually understands artist growth and rollout strategy.
+
+This phase focuses on:
+
+smarter UX,
+realistic AI outputs,
+premium interactions,
+and cinematic product depth.
+
+DO NOT create placeholder-feeling interfaces.
+
+Everything should feel:
+
+intentional,
+strategic,
+high-end,
+artist-focused.
+NEW FEATURE:
+AI ROLLOUT GENERATOR EXPERIENCE
+
+Create a new route:
+
+/studio
+
+This is the core AI workflow experience.
+
+PAGE LAYOUT
+
+Use a professional split-layout design.
+
+LEFT PANEL (INPUT)
+
+Premium form card with:
+
+Fields
+Song Title
+Genre
+Artist Name
+Mood/Vibe
+Target Audience
+Release Goal
+Platforms Focus
+Additional Notes
+
+Use elegant inputs:
+
+dark surfaces,
+gold focus states,
+subtle glow,
+smooth transitions.
+RIGHT PANEL (AI OUTPUT)
+
+This should feel magical.
+
+When user clicks:
+
+“Generate Rollout”
+
+Animate a cinematic AI generation sequence.
+
+Then reveal:
+
+GENERATED CAMPAIGN OUTPUT
+1. Rollout Timeline
+
+Example:
+
+Day 1 → teaser post
+Day 3 → behind-the-scenes clip
+Day 5 → TikTok hook challenge
+Day 7 → official release
+
+Display this as a beautiful vertical timeline UI.
+
+2. TikTok Hook Ideas
+
+Generate premium-looking content cards.
+
+Example:
+
+“POV: you finally found your anthem”
+“This song feels like driving at 2AM”
+“Wait for the beat switch…”
+3. Visual Direction
+
+Generate:
+
+cinematic scene ideas,
+lighting direction,
+wardrobe aesthetic,
+color palette.
+
+Show as elegant creative direction cards.
+
+4. Audience Strategy
+
+Example:
+
+Late-night emotional listeners
+Underground rap audience
+Afro-fusion TikTok audience
+
+Display audience clusters visually.
+
+5. Launch Score
+
+Generate:
+
+virality score,
+rollout strength,
+audience alignment,
+consistency rating.
+
+Display using futuristic radial metrics.
+
+ARTIST DNA SYSTEM
+
+Create a persistent Artist DNA side panel.
+
+This stores:
+
+visual identity,
+tone,
+genre DNA,
+audience profile,
+posting style.
+
+This should feel like:
+
+a futuristic artist intelligence system.
+
+UX & ANIMATION RULES
+
+VERY IMPORTANT:
+
+Use:
+
+Framer Motion transitions
+stagger animations
+subtle loading states
+glassmorphism carefully
+cinematic lighting
+premium spacing
+
+DO NOT:
+
+overcrowd the UI
+use generic charts
+use bright gradients
+create childish AI visuals
+
+Everything must feel:
+
+expensive,
+calm,
+intelligent,
+futuristic.
+ADDITIONAL PREMIUM TOUCHES
+
+Include:
+
+ambient gold glows
+soft moving background gradients
+animated campaign generation pulse
+hover depth effects
+subtle dashboard parallax
+MOBILE EXPERIENCE
+
+The mobile experience must still feel premium.
+
+Do NOT stack everything poorly.
+
+Maintain:
+
+spacing,
+hierarchy,
+cinematic feel.
+FINAL GOAL
+
+The experience should feel like:
+
+“the future operating system for artists.”
+
+Users should immediately feel:
+
+this is premium,
+this is intelligent,
+this is different from normal AI tools.
+
+The product should look worthy of:
+
+venture funding,
+premium subscriptions,
+major creator adoption.

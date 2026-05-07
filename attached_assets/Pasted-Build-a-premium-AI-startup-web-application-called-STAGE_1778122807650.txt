@@ -1,0 +1,296 @@
+Build a premium AI startup web application called STAGEONE.
+
+The product is:
+
+“An AI Artist Growth Operating System.”
+
+This is NOT a generic AI website.
+The experience must feel:
+
+cinematic,
+premium,
+futuristic,
+minimal,
+luxury creative software.
+
+The design quality should feel comparable to:
+
+Linear,
+Raycast,
+Arc Browser,
+Notion,
+modern creative SaaS startups.
+
+DO NOT create:
+
+childish AI gradients,
+crypto-looking UI,
+cluttered dashboards,
+generic templates,
+bright blue corporate styles.
+
+The overall feeling should be:
+
+“Luxury creative infrastructure for modern artists.”
+
+TECH STACK
+
+Use:
+
+Next.js
+TypeScript
+TailwindCSS
+Framer Motion
+shadcn/ui
+
+Structure the app cleanly and professionally.
+
+COLOR SYSTEM
+
+Use EXACT colors:
+
+Backgrounds
+Main Background: #0A0A0B
+Secondary Surface: #141416
+Elevated Cards: #1B1B1F
+Borders: #2B2B31
+Text
+Primary Text: #F5F5F5
+Secondary Text: #A1A1AA
+Muted Text: #71717A
+Accent
+Metallic Gold: #C8A96B
+Platinum Gray: #D6D6D6
+
+Avoid bright saturated colors.
+
+TYPOGRAPHY
+
+Use:
+
+Inter
+OR
+General Sans if available.
+
+Typography style:
+
+large cinematic headlines,
+spacious layouts,
+elegant spacing,
+minimal clutter,
+strong hierarchy.
+LANDING PAGE STRUCTURE
+
+Build the landing page with these sections:
+
+SECTION 1 — HERO
+
+Full-screen premium hero section.
+
+Layout:
+
+Left side:
+headline,
+subheadline,
+CTA buttons.
+Right side:
+futuristic dashboard preview mockup.
+
+Headline:
+
+Launch Music Like a Major Label
+
+Subheadline:
+AI-powered rollout campaigns, visual direction, content strategy, and artist growth tools for modern independent artists.
+
+CTA Buttons:
+
+Start Your Rollout
+Join Waitlist
+
+Add subtle ambient gold glow effects in the background.
+
+Use smooth Framer Motion animations:
+
+fade-in,
+soft upward movement,
+floating dashboard motion.
+SECTION 2 — PROBLEM
+
+Headline:
+
+Most Artists Don’t Fail Because of Talent
+
+Supporting text:
+Creating the music is only the beginning. Promotion, consistency, branding, and audience growth overwhelm independent artists. STAGEONE helps artists launch strategically instead of posting randomly.
+
+Add elegant cards explaining artist pain points:
+
+inconsistent promotion,
+weak branding,
+no rollout strategy,
+content burnout.
+
+Cards should have:
+
+soft borders,
+subtle hover animations,
+premium minimal design.
+SECTION 3 — AI ROLLOUT ENGINE
+
+Headline:
+
+Your AI Rollout Studio
+
+Show feature grid with premium UI cards.
+
+Features:
+
+Campaign Generator
+TikTok Hook Generator
+Visual Direction Engine
+Caption Writer
+Release Timeline Builder
+Artist Brand Identity
+
+Each card should include:
+
+modern icon,
+short description,
+subtle hover effect.
+SECTION 4 — ARTIST DNA
+
+Headline:
+
+Your Creative Identity, Systemized
+
+Description:
+The platform learns your tone, aesthetic, audience, and creative direction to generate consistent rollout campaigns and branding.
+
+Create a premium “Artist DNA” visual panel:
+
+genre,
+visual aesthetic,
+audience profile,
+rollout behavior,
+content tone.
+
+This should look futuristic and elegant.
+
+SECTION 5 — WORKFLOW
+
+Headline:
+
+From Song to Full Campaign in Minutes
+
+Create a horizontal workflow UI:
+
+Upload Song
+AI Analysis
+Campaign Generation
+Social Assets
+Launch Dashboard
+
+Connect steps visually with elegant animated lines.
+
+SECTION 6 — FINAL CTA
+
+Large cinematic CTA section.
+
+Headline:
+
+Your Next Release Deserves More Than Random Posting
+
+CTA Button:
+
+Launch With STAGEONE
+
+Background should include:
+
+soft gradients,
+cinematic lighting,
+luxury aesthetic.
+NAVBAR
+
+Minimal floating navbar.
+
+Include:
+
+Logo text: STAGEONE
+Features
+Workflow
+Pricing
+Waitlist button
+
+Navbar should:
+
+blur background slightly,
+remain fixed on scroll,
+animate smoothly.
+FOOTER
+
+Minimal footer:
+
+STAGEONE
+Privacy
+Terms
+Contact
+IMPORTANT DESIGN RULES
+
+VERY IMPORTANT:
+
+DO NOT:
+
+use generic SaaS layouts,
+overcrowd sections,
+use too many colors,
+use default Tailwind appearance,
+create childish AI visuals.
+
+DO:
+
+prioritize spacing,
+premium visual hierarchy,
+cinematic presentation,
+subtle animations,
+luxury minimalism.
+
+The UI must feel expensive.
+
+APP FOUNDATION
+
+Also create:
+
+Dashboard Route
+
+/dashboard
+
+Include:
+
+left sidebar,
+top navigation,
+rollout campaign cards,
+analytics preview,
+artist DNA panel.
+
+This should be a clean foundation for future expansion.
+
+RESPONSIVENESS
+
+The entire experience must:
+
+look premium on desktop,
+adapt beautifully on mobile,
+maintain spacing consistency,
+preserve cinematic feel.
+FINAL GOAL
+
+The final result should look like:
+
+a venture-backed premium AI startup for artists.
+
+The user should immediately think:
+
+“this feels elite,”
+“this is different,”
+“this feels expensive.”

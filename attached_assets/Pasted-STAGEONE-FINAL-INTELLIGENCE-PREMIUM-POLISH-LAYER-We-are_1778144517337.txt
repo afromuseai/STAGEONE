@@ -1,0 +1,142 @@
+STAGEONE — FINAL INTELLIGENCE + PREMIUM POLISH LAYER
+
+We are upgrading STAGEONE from a structured generator into a creative intelligence system that behaves like a music marketing strategist.
+
+The goal:
+
+Every output must feel like expert-level creative direction, not generic AI text.
+
+1. UPGRADE OUTPUT TONE (CRITICAL)
+
+All AI-generated sections must feel like:
+
+a creative director
+a music strategist
+a viral content expert
+
+NOT a template generator.
+
+Replace generic language with:
+
+Instead of:
+
+“TikTok Hooks”
+
+Use:
+
+“Attention Hooks (Designed for Replay Behavior)”
+
+Instead of:
+
+“Audience Strategy”
+
+Use:
+
+“Audience Positioning Map”
+
+Instead of:
+
+“Visual Direction”
+
+Use:
+
+“Cinematic Identity Blueprint”
+2. ADD STRATEGIC EXPLANATIONS (LIGHTWEIGHT)
+
+Each section must include 1 short insight line:
+
+Example:
+
+Hook Section
+
+“Built to trigger curiosity gaps within the first 2 seconds of scroll behavior.”
+
+Visual Section
+
+“Designed to match nocturnal listening environments and emotional depth.”
+
+Do NOT over-explain. Keep it sharp.
+
+3. UPGRADE ARTIST DNA INTO A SYSTEM DRIVER
+
+Artist DNA must now:
+
+influence all generated outputs
+visibly update strategy labels
+modify tone of hooks and visuals
+
+Example behavior:
+
+If mood = “dark cinematic”:
+
+hooks become more emotional
+visuals become low-light, contrast-heavy
+audience becomes late-night listeners
+
+This must be reflected visually in UI.
+
+4. ADD “CREATIVE STRATEGY HEADER”
+
+At top of /studio output panel, add:
+
+Creative Direction Summary
+
+Example:
+
+“Emotional Afro-Fusion rollout”
+“Focused on late-night streaming behavior”
+“High replay TikTok strategy”
+“Cinematic visual identity”
+
+This becomes the “brain” of the output.
+
+5. MAKE GENERATION FEEL LIKE THINKING
+
+During loading state:
+
+Instead of random dots, show:
+
+“Analyzing genre behavior…”
+“Mapping audience psychology…”
+“Building rollout strategy…”
+“Designing attention hooks…”
+
+This is CRUCIAL for perceived intelligence.
+
+6. ADD “WHY THIS WILL WORK” SECTION
+
+At bottom of results:
+
+Strategic Insight
+
+Explain:
+
+why this rollout works
+why this audience matches
+why this hook style fits
+
+Keep it short but confident.
+
+7. POLISH REQUIREMENTS
+
+Maintain:
+
+premium spacing
+gold accents
+dark luxury UI
+minimal clutter
+
+DO NOT:
+
+add more UI noise
+overcrowd sections
+break visual hierarchy
+FINAL GOAL
+
+STAGEONE must now feel like:
+
+“an AI creative director for music careers”
+
+Not:
+
+“a content generator app”

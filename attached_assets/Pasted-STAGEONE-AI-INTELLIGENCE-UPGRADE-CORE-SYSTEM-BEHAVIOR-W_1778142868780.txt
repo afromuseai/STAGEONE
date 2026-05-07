@@ -1,0 +1,128 @@
+STAGEONE — AI INTELLIGENCE UPGRADE (CORE SYSTEM BEHAVIOR)
+
+We are now upgrading STAGEONE from a UI prototype into a believable intelligent creative system.
+
+The goal is:
+
+make all AI outputs feel deeply informed, strategic, and industry-aware — not generic text generation.
+
+1. MAKE AI OUTPUTS CONTEXT-AWARE
+
+All generated content in /studio must dynamically depend on:
+
+genre
+mood
+platform focus
+target audience
+release goal
+
+NO generic outputs allowed.
+
+Example rule:
+
+Drill/Trap ≠ Afrobeat ≠ Pop ≠ R&B
+TikTok strategy must change based on genre
+Visual direction must match cultural aesthetic
+2. ADD “SMART VARIATION ENGINE”
+
+Every generation must feel unique.
+
+For every new rollout:
+
+hooks must not repeat patterns
+visuals must differ in tone and cinematic style
+audience clusters must adapt logically
+
+Add randomness WITH intelligence, not randomness for novelty.
+
+3. UPGRADE AI OUTPUT QUALITY
+
+Rewrite all AI outputs to feel like they come from:
+
+a creative director
+a music marketing strategist
+a TikTok growth expert
+
+NOT a chatbot.
+
+4. ADD PLATFORM-SPECIFIC STRATEGY LOGIC
+
+If user selects platforms:
+
+TikTok
+hooks must be emotional, POV-based, or trend-driven
+short attention framing
+Instagram
+aesthetic storytelling
+cinematic captions
+YouTube Shorts
+narrative hooks + visual tension
+Spotify release
+positioning + metadata strategy
+
+Outputs must adapt automatically.
+
+5. ADD “VIRALITY REASONING LAYER” (VISUAL ONLY)
+
+In Launch Score section, add breakdown:
+
+Hook Strength
+Emotional Resonance
+Replay Potential
+Trend Fit
+Shareability
+
+Each should feel like an AI evaluation system.
+
+6. MAKE ARTIST DNA EVOLVE
+
+Artist DNA panel must now:
+
+update based on form inputs
+change personality tags dynamically
+reflect genre + mood + audience shifts
+
+Example:
+“Dark Afro-Fusion | Emotional storytelling | Late-night audience”
+
+7. ADD “WHY THIS WORKS” INSIGHT PANEL
+
+After every rollout generation, add a small expandable panel:
+
+Insight:
+
+Explain WHY the rollout strategy works.
+
+Example:
+
+“This hook strategy leverages curiosity gap for TikTok retention”
+“Visual palette aligns with nocturnal listening behavior”
+“Release pacing increases algorithmic re-engagement”
+
+This is what makes it feel like real intelligence.
+
+8. FINAL EXPERIENCE GOAL
+
+When a user generates a rollout, it should feel like:
+
+“This system understands my music better than I do.”
+
+IMPORTANT DESIGN RULE
+
+Do NOT break UI design.
+
+Keep everything:
+
+premium
+minimal
+cinematic
+spaced
+elegant
+
+Never overcrowd.
+
+END GOAL
+
+Transform STAGEONE into:
+
+“The first AI system that feels like a real music marketing strategist.”
